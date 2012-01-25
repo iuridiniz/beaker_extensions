@@ -25,9 +25,11 @@ class RedisManager(NoSqlManager):
         log.debug('%s contained in redis cache (as %s) : %s'%(key, self._format_key(key), self.db_conn.exists(self._format_key(key))))
         return self.db_conn.exists(self._format_key(key))
 
-    def set_value(self, key, value):
+    def set_value(self, key, value, expiretime=None):
         key = self._format_key(key)
         self.db_conn.set(key, pickle.dumps(value))
+        if expiretime:
+            self.db_conn.expire(key, expiretime)
 
     def __delitem__(self, key):
         key = self._format_key(key)
